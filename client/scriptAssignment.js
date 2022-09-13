@@ -2,6 +2,9 @@ var itemsData;
 var shoppingCart = [];
 var isItemsViewVisible = false;
 
+const publicKey = "pk_test_51Lg6dACg8N1P6KwSYe8bU0VBBXKVFoS0Sbbvg1lYixifQBGibaEGRgLwr6AbAvgp0YgHRwxVYQABKZznUTdLf11u00lIXiiGzJ"
+console.log(publicKey)
+
 /* Fetch data from the json file into a javascript object */
 fetch("./assets/data.json")
 .then(function(response) {
