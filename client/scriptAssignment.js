@@ -1,9 +1,11 @@
+
 var itemsData;
 var shoppingCart = [];
 var isItemsViewVisible = false;
 
-const publicKey = "pk_test_51Lg6dACg8N1P6KwSYe8bU0VBBXKVFoS0Sbbvg1lYixifQBGibaEGRgLwr6AbAvgp0YgHRwxVYQABKZznUTdLf11u00lIXiiGzJ"
-console.log(publicKey)
+let stripe = Stripe( 
+"pk_test_51LgOtTKWccXv1xw6iIpmlLLcEhzCGEE64Oqq0Efdih2dgMQnu4HMm2foKxyOJbS6AML7UodL1kwHfZ1tvcQsycMi00ZvQoOSrs"
+)
 
 /* Fetch data from the json file into a javascript object */
 fetch("./assets/data.json")
@@ -14,6 +16,15 @@ fetch("./assets/data.json")
     itemsData = data;
     createUIFromLoadedItemsData();
 });
+
+
+
+
+
+
+
+
+
 
 /* Use the data to create a list of these object on your website */
 function createUIFromLoadedItemsData() {
@@ -122,8 +133,11 @@ function createShoppingCartItem(itemData, index) {
         counter.innerText = shoppingCart.length;
         /* Update the UI list */
         isItemsViewVisible = true;
+        console.log(shoppingCart)
         showShoppingCart();
     };
+
+    
 
     var item = document.createElement("li");
     item.appendChild(image);
@@ -133,6 +147,15 @@ function createShoppingCartItem(itemData, index) {
 
     return item;
 }
+
+
+
+
+
+
+
+
+
 
 function createShoppingSummary() {
     /* Total price */
@@ -146,9 +169,38 @@ function createShoppingSummary() {
     /* Proceed button */
     var proceedButton = document.createElement("button");
     proceedButton.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i>' + "&nbsp;&nbsp;&nbsp;" + "Slutför ditt köp";
-    proceedButton.onclick = function() {
-        alert("Tack för din beställning, vi önskar dig en fin kväll! Ses snart igen =)");
-    };
+  
+    const itemsNow = [
+        {name: 'dog', 
+        age: 22}
+        
+    ]
+        
+    proceedButton.addEventListener("click", function () {
+        fetch("/create-checkout-session", {
+          headers: {'Content-Type': 'application/json'},
+          method: "POST",
+          body: JSON.stringify(shoppingCart)
+        })
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (session) {
+            return stripe.redirectToCheckout({ sessionId: session.id });
+          })
+          .then(function (result) {
+        
+            if (result.error) {
+              alert(result.error.message);
+            }
+          })
+          .catch(function (error) {
+            console.error("Error:", error);
+          });
+      });
+
+        ///// TODOOOOOOOO
+        
 
     var info = document.createElement("div");
     info.appendChild(priceLabel);
