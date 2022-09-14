@@ -147,14 +147,6 @@ function createShoppingCartItem(itemData, index) {
 }
 
 
-
-
-
-
-
-
-
-
 function createShoppingSummary() {
     /* Total price */
     var totalPrice = 0;
@@ -166,37 +158,72 @@ function createShoppingSummary() {
     
     /* Proceed button */
     var proceedButton = document.createElement("button");
-    proceedButton.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i>' + "&nbsp;&nbsp;&nbsp;" + "Slutför ditt köp";
-  
+    proceedButton.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i>' + "&nbsp;&nbsp;&nbsp;" + "To checkout";
+    proceedButton.addEventListener('click', () => {
+      createSession(shoppingCart)
+      createUser()
+    })
     const itemsNow = [
         {name: 'dog', 
-        age: 22}
-        
+        age: 22}        
     ]
-        
-    proceedButton.addEventListener("click", function () {
-        fetch("/create-checkout-session", {
-          headers: {'Content-Type': 'application/json'},
-          method: "POST",
-          body: JSON.stringify(shoppingCart)
-        })
-          .then(function (response) {
-            return response.json();
-          })
-          .then(function (session) {
-            return stripe.redirectToCheckout({ sessionId: session.id });
-          })
-          .then(function (result) {
-        
-            if (result.error) {
-              alert(result.error.message);
-            }
-          })
-          .catch(function (error) {
-            console.error("Error:", error);
-          });
+
+    
+
+    const createSession = (cart) => {
+    fetch("/create-checkout-session", {
+      headers: {'Content-Type': 'application/json'},
+      method: "POST",
+      body: JSON.stringify(cart)
+    })
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (session) {
+        return stripe.redirectToCheckout({ sessionId: session.id });
+      })
+      .then(function (result) {
+    
+        if (result.error) {
+          alert(result.error.message);
+        }
+      })
+      .catch(function (error) {
+        console.error("Error:", error);
+      });
+    }
+
+
+   
+
+
+    const createUser = () => {
+      let email = document.getElementById('E-mail').value
+      console.log(email);
+      
+      fetch("/create-customer", {
+        headers: {'Content-Type': 'application/json'},
+        method: "POST",
+        body: JSON.stringify(email)
+      }) 
+      .then(function (response) {
+        console.log(response)
+        return response.json();
+      })
+      .then(function (result) {
+    
+        if (result.error) {
+          alert(result.error.message);
+        }
+      })
+      .catch(function (error) {
+        console.error("Error:", error);
       });
 
+
+        ///// TODOOOOOOOO
+    }
+   /*  */
         ///// TODOOOOOOOO
         
 
@@ -240,11 +267,7 @@ function ValidationForm() {
       phoneNumber.focus();
       return false;
     }
-    if (pass.value == "") {
-      alert("Please enter your password");
-      pass.focus();
-      return false;
-    }
+
   
     return true;
   }

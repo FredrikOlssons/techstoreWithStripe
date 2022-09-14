@@ -13,6 +13,9 @@ const stripe = require('stripe')(process.env.SUPER_SECRET_KEY);
  */
 
 
+
+
+
 const PORT = 3003;
 const YOUR_DOMAIN = 'http://localhost:3003';
 
@@ -53,7 +56,26 @@ app.get('/client/assets',function(req,res) {
     console.log(session)
     res.status(200).json({ id: session.id})
 }) */
-  
+
+// const customer = await stripe.customers.retrieve(
+//   'cus_MQjBZb981P4Rg6'
+// );
+
+app.post('/create-customer'), async (req, res) => {
+  try {
+    console.log(req.body, 'body from client')
+    const customer = await stripe.customers.create({
+      email: req.body.email
+    });
+    
+    res.json('Skapade kund')
+//console.log(userEmail, 'here is email');
+
+}catch (err){
+  res.status(404).json(err, 'no can do')
+}
+}
+
 
   app.post("/create-checkout-session", async (req, res) => {
     let boughtItems = req.body;
@@ -65,8 +87,7 @@ app.get('/client/assets',function(req,res) {
           currency: "sek",
           product_data: {
             name: item.title,
-            description: item.description,
-           
+            description: item.description,          
            
           },
           unit_amount: item.price * 100
@@ -74,30 +95,33 @@ app.get('/client/assets',function(req,res) {
         quantity: 1, // kanske något annat här
 
       };
-      itemsToPay.push(items);
-     
+      itemsToPay.push(items);     
     });
+
+
+    
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
-        customer_creation: 'always',
-        customer_email: 'customer@example.com',
+        // customer_creation: 'always',
+        // customer_email: userEmail,
         
         line_items: itemsToPay,
         
         mode: "payment",
         submit_type: 'pay',
-
         
         success_url: `http://localhost:3003/success.html`,
         cancel_url: "https://localhost:3003/cancel.html",
       });
-      console.log(session.customer)
-      console.log(session.customer_email)
+      //console.log(session.customer)
+      //console.log(session.customer_email)
       res.status(200).json({ id: session.id });
     });
 
-  
+    
+
+
 
 
 app.listen(PORT, () => {
