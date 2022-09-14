@@ -21,11 +21,6 @@ fetch("./assets/data.json")
 
 
 
-
-
-
-
-
 /* Use the data to create a list of these object on your website */
 function createUIFromLoadedItemsData() {
     if (isItemsViewVisible) { return; }
@@ -107,6 +102,9 @@ function showShoppingCart() {
 
     var container = document.querySelector("#main");
     container.replaceChild(content, container.firstChild);
+   
+    let visible = document.getElementById('form-hide')
+    visible.classList.remove('form-hide')
 }
 
 function createShoppingCartItem(itemData, index) {
@@ -208,3 +206,45 @@ function createShoppingSummary() {
 
     return info;
 }
+
+
+// for form, edit 
+function ValidationForm() {
+    let username = document.forms["RegForm"]["Name"];
+    let email = document.forms["RegForm"]["Email"];
+    let phoneNumber = document.forms["RegForm"]["Telephone"];
+
+    let pass = document.forms["RegForm"]["Password"];
+    if (username.value == "") {
+      alert("Please enter your name.");
+      username.focus();
+      return false;
+    }
+    if (email.value == "") {
+      alert("Please enter a valid e-mail address.");
+      email.focus();
+      return false;
+    }
+    if (email.value.indexOf("@", 0) < 0) {
+      alert("Please enter a valid e-mail address.");
+      email.focus();
+      return false;
+    }
+    if (email.value.indexOf(".", 0) < 0) {
+      alert("Please enter a valid e-mail address.");
+      email.focus();
+      return false;
+    }
+    if (phoneNumber.value == "") {
+      alert("Please enter your telephone number.");
+      phoneNumber.focus();
+      return false;
+    }
+    if (pass.value == "") {
+      alert("Please enter your password");
+      pass.focus();
+      return false;
+    }
+  
+    return true;
+  }
