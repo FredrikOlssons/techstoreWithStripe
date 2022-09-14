@@ -2,6 +2,9 @@ require('dotenv').config();
 constfs = require("fs")
 const express = require('express')
 
+//const secret = process.env.SUPER_SECRET_KEY
+const stripe = require('stripe')(process.env.SUPER_SECRET_KEY);
+
 // more imports here
 
 /* if (process.env.NODE_ENV !== 'production') {
@@ -14,11 +17,11 @@ const PORT = 3003;
 const YOUR_DOMAIN = 'http://localhost:3003';
 
 const app = express()
-const secret = process.env.SUPER_SECRET_KEY
-console.log(secret)
+
 
 
 app.use('/', express.static('./client'))
+app.use(express.json())
 
 
 app.set('view engine','ejs')
@@ -38,23 +41,66 @@ app.get('/client/assets',function(req,res) {
     })
   })
 
-app.post('/create-checkout-session', async (req, res) => {
-    const session = await stripe.checkout.sessions.create({
-      line_items: [
-        {
-          // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-          price: '{{PRICE_ID}}',
-          quantity: 1,
-        },
-      ],
-      mode: 'payment',
-      success_url: `${YOUR_DOMAIN}/success.html`,
-      cancel_url: `${YOUR_DOMAIN}/cancel.html`,
-    });
-  
-    res.redirect(303, session.url);
-  });
 
+ /*  app.post("/api/session/new", async (req, res) => {
+
+    
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: req.body.line_items,
+      mode: "payment",
+      success_url: "http://localhost:3003/success.html",
+      cancel_url: "http://localhost:3003/"   
+    })
+    console.log(session)
+    res.status(200).json({ id: session.id})
+}) */
+
+
+  app.post("/create-checkout-session", async (req, res) => {
+    
+    let boughtItems = req.body;
+    console.log(boughtItems, 'all items in cart')
+    
+    
+    let itemsToPay = [];
+    
+    boughtItems.forEach((item) => {
+        console.log(item, 'loop through items')
+      let items = {
+        price_data: {
+          currency: "sek",
+          product_data: {
+            name: item.title,
+            description: item.description,
+           
+           
+          },
+          unit_amount: item.price * 100
+        },
+        quantity: 1,
+
+      };
+      itemsToPay.push(items);
+      console.log(items, 'items')
+      console.log(itemsToPay, 'toStripe')
+    });
+
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: itemsToPay,
+        
+        mode: "payment",
+
+        
+        success_url: `http://localhost:3003/success.html`,
+        cancel_url: "https://localhost:3003/cancel.html",
+      });
+      res.status(200).json({ id: session.id });
+    });
+
+  
+ 
 
 
 
