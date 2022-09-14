@@ -18,8 +18,6 @@ const YOUR_DOMAIN = 'http://localhost:3003';
 
 const app = express()
 
-
-
 app.use('/', express.static('./client'))
 app.use(express.json())
 
@@ -55,18 +53,13 @@ app.get('/client/assets',function(req,res) {
     console.log(session)
     res.status(200).json({ id: session.id})
 }) */
-
+  
 
   app.post("/create-checkout-session", async (req, res) => {
-    
     let boughtItems = req.body;
-    console.log(boughtItems, 'all items in cart')
-    
-    
     let itemsToPay = [];
-    
     boughtItems.forEach((item) => {
-        console.log(item, 'loop through items')
+      
       let items = {
         price_data: {
           currency: "sek",
@@ -78,31 +71,33 @@ app.get('/client/assets',function(req,res) {
           },
           unit_amount: item.price * 100
         },
-        quantity: 1,
+        quantity: 1, // kanske något annat här
 
       };
       itemsToPay.push(items);
-      console.log(items, 'items')
-      console.log(itemsToPay, 'toStripe')
+     
     });
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
+        customer_creation: 'always',
+        customer_email: 'customer@example.com',
+        
         line_items: itemsToPay,
         
         mode: "payment",
+        submit_type: 'pay',
 
         
         success_url: `http://localhost:3003/success.html`,
         cancel_url: "https://localhost:3003/cancel.html",
       });
+      console.log(session.customer)
+      console.log(session.customer_email)
       res.status(200).json({ id: session.id });
     });
 
   
- 
-
-
 
 
 app.listen(PORT, () => {
