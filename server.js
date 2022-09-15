@@ -61,24 +61,30 @@ app.get('/client/assets',function(req,res) {
 //   'cus_MQjBZb981P4Rg6'
 // );
 
-app.post('/create-customer'), async (req, res) => {
-  try {
-    console.log(req.body, 'body from client')
-    const customer = await stripe.customers.create({
-      email: req.body.email
-    });
-    
-    res.json('Skapade kund')
-//console.log(userEmail, 'here is email');
+let addedcustomers = []
 
-}catch (err){
-  res.status(404).json(err, 'no can do')
-}
-}
+app.post('/create-customer', async (req, res) => {
+  try {
+    //console.log(req.body, 'body from client')
+    const customer = await stripe.customers.create({
+      //description: "",
+      email: req.body.email,
+      name: req.body.name,
+      phone: req.body.phone 
+    });
+    //console.log(customer)
+    //console.log(userEmail, 'here is email');
+    addedcustomers.push(customer)
+    console.log(addedcustomers);
+    res.json(customer.id)
+  }catch (err){
+    res.status(404).json(err)
+  }
+})
 
 
   app.post("/create-checkout-session", async (req, res) => {
-    let boughtItems = req.body;
+    let boughtItems = req.body.cart;
     let itemsToPay = [];
     boughtItems.forEach((item) => {
       
@@ -101,22 +107,26 @@ app.post('/create-customer'), async (req, res) => {
 
     
 
+    console.log(req.body)
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         // customer_creation: 'always',
         // customer_email: userEmail,
         
         line_items: itemsToPay,
+        customer: req.customerId, 
         
         mode: "payment",
         submit_type: 'pay',
-        
+
         success_url: `http://localhost:3003/success.html`,
         cancel_url: "https://localhost:3003/cancel.html",
       });
-      //console.log(session.customer)
-      //console.log(session.customer_email)
-      res.status(200).json({ id: session.id });
+
+      
+      // console.log(session.customer)
+      console.log(session)
+      res.status(200).json(session.id);
     });
 
     
@@ -125,7 +135,5 @@ app.post('/create-customer'), async (req, res) => {
 
 
 app.listen(PORT, () => {
-
     console.log(`Server is running on port ${PORT}`)
-
 })
