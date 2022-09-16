@@ -4,7 +4,7 @@ var shoppingCart = [];
 var isItemsViewVisible = false;
 
 let stripe = Stripe(
-  "pk_test_51Lh9ksEgr5mkNVomNdFIQqM4OAE4k2mr70fQVGl1ztse10hIYHDvRV9wfD1MrAqaRuhKiHTXI1Bl9jXmp2d3F0Pd00SASOXsIm"
+  "pk_test_51LiJ5BAbJ9b1S6Uatr6niXscQAEEPN1S6rc7DiGD3m7lzzEPnSX4nhbfXuopYhkG5FemOhT8Y7xFfe9spXyCBoDW00G510cMjL"
 )
 
 /* Fetch data from the json file into a javascript object */
@@ -161,19 +161,17 @@ function createShoppingSummary() {
   proceedButton.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i>' + "&nbsp;&nbsp;&nbsp;" + "To checkout";
 
   proceedButton.addEventListener('click', async () => {
-    let customerId = await createUser()
-     console.log(customerId);
-    if (customerId) {
+    let createNewCustomer = await createUser()
+    if (createNewCustomer) {
       setTimeout( async () => {
-        let createSess = await createSession(shoppingCart, customerId)
+        let createSess = await createSession(shoppingCart, createNewCustomer)
         console.log(createSess);
         if (createSess) {
-          return stripe.redirectToCheckout({ sessionId: createSess });
-        }
-
-      }, 2000)  
-
-    }
+          return await stripe.redirectToCheckout({ sessionId: createSess });
+          }
+        }, 1000)
+        
+      }
   })
 
   var info = document.createElement("div");
@@ -204,7 +202,6 @@ const createUser = async () => {
     let customer = {
       email: document.getElementById('email').value,
       name: document.getElementById('name').value,
-      // address: document.getElementById('adress').value,
       phone: document.getElementById('telephone').value
     }
 
@@ -215,7 +212,6 @@ const createUser = async () => {
     })
 
     let customerId = await response.json()
-
     return customerId
 
   } catch (err) {
