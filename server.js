@@ -1,5 +1,6 @@
 require('dotenv').config();
 constfs = require("fs")
+const { Console } = require('console');
 const express = require('express')
 
 //const secret = process.env.SUPER_SECRET_KEY
@@ -50,21 +51,46 @@ app.get('/client/assets',function(req,res) {
 
 let addedcustomers = []
 
+const checkCustomer = () => {
+ 
+
+  
+}
+
+
 app.post('/create-customer', async (req, res) => {
   try {
+    let existingCustomer = addedcustomers.find((user) => {
+      console.log(user);
+      if (user.email === req.body.email){
+        console.log('user match')
+        //return user.email == req.body.email
+
+        // potentially save customer to json instead, to keep user outside of server-restart
+      }
+    })
+    if(existingCustomer){
+      return res.json('user exists')
+  
+    }
+
     const customer = await stripe.customers.create({
       email: req.body.email,
       name: req.body.name,
-      phone: req.body.phone 
+      phone: req.body.phone,
+     
     });
+ 
     addedcustomers.push(customer)
-    console.log(addedcustomers);
+    console.log('if not exists');
     res.json(customer.id)
+  
+    
   }catch (err){
     res.status(404).json(err)
   }
-})
 
+})
 
   app.post("/create-checkout-session", async (req, res) => {
     let boughtItems = req.body.cart;
@@ -100,13 +126,56 @@ app.post('/create-customer', async (req, res) => {
         mode: "payment",
         submit_type: 'pay',
 
-        success_url: `http://localhost:3000/success.html`,
+        success_url: `http://localhost:3000/success.html??session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: "https://localhost:3000/cancel.html",
       });
       console.log(session)
       res.status(200).json(session.id);
     });
 
+
+
+
+/*     app.post('/validation', async (req,res ) => {
+      const sessionId = req.body.sessionId; 
+    console.log(sessionId, 'session')
+      const payment = await stripe.checkout.sessions.retrieve()
+    })
+ */
+
+    const endpointSecret = "whsec_e6bacd77318085612bc6145497a05f1147f690aed44be0efb52f76e87432831c";
+
+
+
+app.post('/webhook', function(request, response) {
+  const sig = request.headers['stripe-signature'];
+  const body = request.body;
+
+  let event = null;
+
+  try {
+    event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+  } catch (err) {
+    // invalid signature
+    response.status(400).end();
+    return;
+  }
+
+  let intent = null;
+  switch (event['type']) {
+    case 'payment_intent.succeeded':
+      intent = event.data.object;
+      console.log("Succeeded:", intent.id);
+      break;
+    case 'payment_intent.payment_failed':
+      intent = event.data.object;
+      const message = intent.last_payment_error && intent.last_payment_error.message;
+      console.log('Failed:', intent.id, message);
+      break;
+  }
+
+  response.sendStatus(200);
+});
     
 
 
