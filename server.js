@@ -16,7 +16,7 @@ const stripe = require('stripe')(process.env.SUPER_SECRET_KEY);
 
 
 
-const PORT = 3003;
+const PORT = 3000;
 const YOUR_DOMAIN = 'http://localhost:3003';
 
 const app = express()
@@ -43,19 +43,6 @@ app.get('/client/assets',function(req,res) {
   })
 
 
- /*  app.post("/api/session/new", async (req, res) => {
-
-    
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: req.body.line_items,
-      mode: "payment",
-      success_url: "http://localhost:3003/success.html",
-      cancel_url: "http://localhost:3003/"   
-    })
-    console.log(session)
-    res.status(200).json({ id: session.id})
-}) */
 
 // const customer = await stripe.customers.retrieve(
 //   'cus_MQjBZb981P4Rg6'
@@ -65,15 +52,11 @@ let addedcustomers = []
 
 app.post('/create-customer', async (req, res) => {
   try {
-    //console.log(req.body, 'body from client')
     const customer = await stripe.customers.create({
-      //description: "",
       email: req.body.email,
       name: req.body.name,
       phone: req.body.phone 
     });
-    //console.log(customer)
-    //console.log(userEmail, 'here is email');
     addedcustomers.push(customer)
     console.log(addedcustomers);
     res.json(customer.id)
@@ -93,8 +76,8 @@ app.post('/create-customer', async (req, res) => {
           currency: "sek",
           product_data: {
             name: item.title,
-            description: item.description,          
-           
+            description: item.description,
+
           },
           unit_amount: item.price * 100
         },
@@ -105,26 +88,21 @@ app.post('/create-customer', async (req, res) => {
     });
 
 
-    
 
-    console.log(req.body)
+
+
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
-        // customer_creation: 'always',
-        // customer_email: userEmail,
-        
+
         line_items: itemsToPay,
-        customer: req.customerId, 
-        
+        customer: req.body.customerId,
+
         mode: "payment",
         submit_type: 'pay',
 
-        success_url: `http://localhost:3003/success.html`,
-        cancel_url: "https://localhost:3003/cancel.html",
+        success_url: `http://localhost:3000/success.html`,
+        cancel_url: "https://localhost:3000/cancel.html",
       });
-
-      
-      // console.log(session.customer)
       console.log(session)
       res.status(200).json(session.id);
     });
