@@ -258,6 +258,37 @@ const createSession = async (cart, customerId) => {
   }
 }
 
+
+const checkUser = async () => {
+  //let email = document.getElementById('email').value
+  let userEmail = {
+    email: document.getElementById('email').value
+  }
+ 
+  let response = fetch('/check-if-customer-exists', {
+    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    body: JSON.stringify(userEmail) 
+    
+  })  .then((result) => {
+    console.log(result)
+    return result.json(userEmail.email);
+  })
+  .then((answer) => {
+    console.log(answer)
+    
+  
+})
+.catch((err) => console.error(err));
+}
+
+let customerCheck = document.getElementById('get-all-customers')
+customerCheck.addEventListener('click', () => {
+  checkUser();
+} )
+
+
+
 const createUser = async () => {
   try {
     let customer = {
