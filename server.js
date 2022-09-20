@@ -1,6 +1,5 @@
 require('dotenv').config();
 const fs = require("fs")
-const { Console } = require('console');
 const express = require('express');
 const { runInNewContext } = require('vm');
 
