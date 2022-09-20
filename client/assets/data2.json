@@ -1,0 +1,93 @@
+[
+  {
+    "id": "",
+    "title": "Stege",
+    "description": "En riktigt hög stege",
+    "image": "stege.jpg",
+    "price": 799
+  },
+  {
+    "id": "",
+    "title": "Person",
+    "description": "En person som kan hålla en stege. Kan även kombineras med andra varor",
+    "image": "person.jpg",
+    "price": 2999
+  },
+  {
+    "id": "",
+    "title": "Kombination stege och person",
+    "description": "Köp en stege och en person som kan hålla den åt dig",
+    "image": "personstege.jpg",
+    "price": 3599
+  },
+  {
+      "id": "",
+      "title": "Heroin, toppkvalitet",
+      "description": "Ett säkert sätt att bli hög på",
+      "image": "fine.jpg",
+      "price": 1399
+    },
+    {
+        "id": "",
+        "title": "Heroin, blandad kvalitet",
+        "description": "Högheten kan variera",
+        "image": "badddd.jpg",
+        "price": 199
+    },
+    {
+        "id": "",
+        "title": "Tesked",
+        "description": "Tillbehör till ditt valda heroin",
+        "image": "sked.png",
+        "price": 69
+    },
+    {
+        "id": "",
+        "title": "Kanyl",
+        "description": "Ett måste för en lyckad heroinkväll",
+        "image": "kanyl.jpg",
+        "price": 39
+    },
+    {
+      "id": "",
+      "title": "Unik kombination, heroin med tillbehör",
+      "description": "Se till att inte glömma något och gör kvällen fulländad. OBS säljes endast i kombination med 'Heroin, blandad kvalitet'",
+      "image": "komboheroin.jpg",
+      "price": 249
+    },
+    {
+        "id": "",
+    "title": "Bilstereo",
+    "description": "En bilstereo med mycket högt ljud",
+    "image": "stereo.jpg",
+    "price": 699
+  },
+  {
+    "id": "",
+    "title": "Kombination bilstereo och person",
+    "description": "Kombinera din bilstereo med en person som alltid höjer volymen till max. Personen går även att kombinera med stege",
+    "image": "kombosound.jpg",
+    "price": 2499
+},
+{
+    "id": "",
+    "title": "Hi SMS",
+    "description": "Få ett Hej i din SMS-inkorg",
+    "image": "hi.jpg",
+    "price": 20
+  },
+  {
+      "id": "",
+      "title": "iPhone X",
+      "description": "Köp till en telefon till ditt SMS.",
+      "image": "iPhoneX.png",
+      "price": 11495
+  },
+{
+    "id": "",
+    "title": "Kombination Iphone X med Hi-SMS",
+    "description": "Få ditt SMS tillsammans med en telefon till rabatterat pris",
+    "image": "kombophone.png",
+    "price": 11510
+  }
+]
