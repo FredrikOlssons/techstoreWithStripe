@@ -1,7 +1,8 @@
 require('dotenv').config();
 constfs = require("fs")
 const { Console } = require('console');
-const express = require('express')
+const express = require('express');
+const { runInNewContext } = require('vm');
 
 //const secret = process.env.SUPER_SECRET_KEY
 const stripe = require('stripe')(process.env.SUPER_SECRET_KEY);
@@ -56,6 +57,37 @@ const checkCustomer = () => {
 
   
 }
+
+
+app.post('/check-if-customer-exists', async (req, res) => {
+  try {
+    
+const customers = await stripe.customers.list({
+  email: req.body.email
+}); 
+console.log(customers)
+
+
+let existingCustomer = customers.data.find((user) => {
+  console.log(user.email, 'all the emails?')
+  console.log(req.body.email, 'bod?')
+  return user.email === req.body.email
+  
+  
+})
+
+if(!existingCustomer) {
+  throw new Error("customer does not exist...")
+}
+console.log(existingCustomer, 'here')
+res.status(200).json(existingCustomer)
+
+  }catch(err) {
+    console.log(err, 'no customer found')
+    res.status(400).json(err)
+  }
+})
+
 
 
 app.post('/create-customer', async (req, res) => {
@@ -131,6 +163,19 @@ app.post('/create-customer', async (req, res) => {
       });
       console.log(session)
       res.status(200).json(session.id);
+    });
+
+
+
+    app.get("/orders", async (req, res) => {
+      if (!req.session.id) {
+        return res.json(false);
+      }
+      let userID = req.session.customerID;
+      let unParsedOrderlist = fs.readFileSync("verification.json");
+      let orderList = JSON.parse(unParsedOrderlist);
+      const result = orderList.filter((order) => order.customerID === userID);
+      res.json(result);
     });
 
 
