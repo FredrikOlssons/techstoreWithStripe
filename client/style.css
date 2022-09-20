@@ -171,3 +171,17 @@ button:hover {
   .form-hide {
     visibility: hidden;
   }
+
+
+  #customerRegForm {
+    color: black;
+  }
+
+  .form {
+    display: flex;
+    justify-content: center;
+  }
+
+  .inputContainer {
+    justify-content: center;
+  }

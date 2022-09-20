@@ -4,7 +4,7 @@ var shoppingCart = [];
 var isItemsViewVisible = false;
 
 let stripe = Stripe(
-  "pk_test_51LgOtTKWccXv1xw6iIpmlLLcEhzCGEE64Oqq0Efdih2dgMQnu4HMm2foKxyOJbS6AML7UodL1kwHfZ1tvcQsycMi00ZvQoOSrs"
+  "pk_test_51LiJ5BAbJ9b1S6Uatr6niXscQAEEPN1S6rc7DiGD3m7lzzEPnSX4nhbfXuopYhkG5FemOhT8Y7xFfe9spXyCBoDW00G510cMjL"
 )
 
 /* Fetch data from the json file into a javascript object */
@@ -19,9 +19,70 @@ fetch("./assets/data.json")
 
 
 
+  let customerForm = document.getElementById("main")
+  
+  let formHead = document.createElement("h2")
+  formHead.innerText = "Customer Registration"
+  
+  let form = document.createElement("form")
+  form.classList.add("form")
+  form.name="RegForm"
+  form.method = "post"
+  form.action="/form/submit.php"
+  // form.class.add("w3docs form-hide")
+  form.addEventListener("onsubmit", () => {
+    return ValidationForm()
+  })
+
+  let inputContainer = document.createElement("div")
+  inputContainer.classList.add("inputContainer")
+  
+  let fullNameDiv = document.createElement("div")
+  let fullnameInput = document.createElement("input")
+  fullnameInput.name="Name"
+  fullnameInput.setAttribute("id", "name")
+  fullnameInput.placeholder = "Full name"
+  fullnameInput.type ="text"
+
+  
+  let adressDiv = document.createElement("div")
+  let adressInput = document.createElement("input")
+  adressInput.setAttribute("id", "adress")
+  adressInput.name="adress"
+  adressInput.placeholder = "Adress"
+  adressInput.type = "text"
+
+  
+  let emailDiv = document.createElement("div")
+  let emailInput = document.createElement("input")
+  emailInput.setAttribute("id", "email")
+  emailInput.name="Email"
+  emailInput.placeholder = "E-Mail"
+  emailInput.type = "text"
+
+  
+  let phoneDiv = document.createElement("div")
+  let phoneInput = document.createElement("input")
+  phoneInput.setAttribute("id", "telephone")
+  phoneInput.name="Telephone"
+  phoneInput.placeholder = "Phone Number"
+  phoneInput.type = "text"
 
 
-/* Use the data to create a list of these object on your website */
+
+  
+  fullNameDiv.append(fullnameInput)
+  adressDiv.append(adressInput)
+  emailDiv.append(emailInput)
+  phoneDiv.append(phoneInput)
+  
+  inputContainer.append(fullNameDiv, adressDiv, emailDiv, phoneDiv)
+  form.append(inputContainer)
+  customerForm.append(formHead, form)
+  
+  
+  
+  /* Use the data to create a list of these object on your website */
 function createUIFromLoadedItemsData() {
   if (isItemsViewVisible) { return; }
   isItemsViewVisible = true;
@@ -103,8 +164,8 @@ function showShoppingCart() {
   var container = document.querySelector("#main");
   container.replaceChild(content, container.firstChild);
 
-  let visible = document.getElementById('form-hide')
-  visible.classList.remove('form-hide')
+  // let visible = document.getElementById('form-hide')
+  // visible.classList.remove('form-hide')
 }
 
 function createShoppingCartItem(itemData, index) {
