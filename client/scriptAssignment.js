@@ -221,8 +221,11 @@ function createShoppingSummary() {
   var proceedButton = document.createElement("button");
   proceedButton.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i>' + "&nbsp;&nbsp;&nbsp;" + "To checkout";
 
+
+
+  // below, functions to create session and for redirect
   proceedButton.addEventListener('click', async () => {
-    let createNewCustomer = await createUser()
+    let createNewCustomer = await checkOrCreateUser()
     if (createNewCustomer) {
       setTimeout( async () => {
         let createSess = await createSession(shoppingCart, createNewCustomer)
@@ -242,6 +245,13 @@ function createShoppingSummary() {
   return info;
 }
 
+
+
+
+
+
+/// functions for stripe/customers/session below ////////
+
 const createSession = async (cart, customerId) => {
   try {
     let response = await fetch("/create-checkout-session", {
@@ -259,8 +269,9 @@ const createSession = async (cart, customerId) => {
 }
 
 
-const checkUser = async () => {
+/* const checkUser = async () => {
   //let email = document.getElementById('email').value
+  //// SKICKA MED CUSTOMER, plocka ut email för check på om customer finns. skicka med hela customer till att skapa en ny customer :))))))))
   let userEmail = {
     email: document.getElementById('email').value
   }
@@ -285,11 +296,42 @@ const checkUser = async () => {
 let customerCheck = document.getElementById('get-all-customers')
 customerCheck.addEventListener('click', () => {
   checkUser();
-} )
+} ) */
 
 
+///// todo, 
 
-const createUser = async () => {
+const checkOrCreateUser = async () => {
+  try {
+    let userEmail = {
+      email: document.getElementById('email').value
+    }
+    let customer = {
+      email: document.getElementById('email').value,
+      name: document.getElementById('name').value,
+      phone: document.getElementById('telephone').value
+    }
+
+    let response = await fetch("/check-if-customer-exists", {
+      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      body: JSON.stringify(customer, userEmail)
+    })
+
+    let customerId = await response.json()
+    return customerId
+
+  } catch (err) {
+    console.error("Error:", err);
+  }
+
+}
+let customerCheck = document.getElementById('get-all-customers')
+customerCheck.addEventListener('click', () => {
+  checkOrCreateUser();
+})
+
+/* const createUser = async () => {
   try {
     let customer = {
       email: document.getElementById('email').value,
@@ -310,7 +352,7 @@ const createUser = async () => {
     console.error("Error:", err);
   }
 
-}
+} */
 
 // for form, edit 
 function ValidationForm() {

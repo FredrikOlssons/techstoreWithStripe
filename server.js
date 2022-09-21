@@ -58,11 +58,17 @@ const checkCustomer = () => {
   
 }
 
-
-/* app.post('/check-if-customer-exists', async (req, res) => {
+/// name-change, uppdatera kund? 
+// kolla, finns det kund? 
+// 
+ app.post('/check-if-customer-exists', async (req, res) => {
   let existingCustomers = await stripe.customers.list({email : req.body.email});
 if(existingCustomers.data.length){
     console.log('this cus already exists bro')
+    console.log(existingCustomers, 'the customer thAT EXISTS')
+    console.log(existingCustomers.data[0].id)
+    res.json(existingCustomers.data[0].id)
+    
 }else{
     
       const customer = await stripe.customers.create({
@@ -74,11 +80,11 @@ if(existingCustomers.data.length){
    
       addedcustomers.push(customer)
       console.log('customer created?');
-      console.log(customer)
-      res.json(customer.id)
+      console.log(customer, 'new customer ')
+      res.json(customer.id) 
 }
-}) */
-
+}) 
+/* 
 app.post('/check-if-customer-exists', async (req, res) => {
   try {
     
@@ -143,7 +149,7 @@ app.post('/create-customer', async (req, res) => {
   }
 
 }) 
-
+ */
   app.post("/create-checkout-session", async (req, res) => {
     let boughtItems = req.body.cart;
     let itemsToPay = [];
@@ -183,16 +189,28 @@ app.post('/create-customer', async (req, res) => {
 
     let dateOrdered = new Date().toLocaleString();
 
-    app.post("/confirm/:sessionId", async (req, res) => {
+
+   
     
+  
+
+     
+    app.post("/confirm/:sessionId", async (req, res) => {
       const sessionId = req.params.sessionId;
-      console.log(sessionId)
+      //console.log(sessionId)
+      let notPaid = false; 
       const session = await stripe.checkout.sessions.retrieve(sessionId);
-      if (session.payment_status === "paid") {
+
+      let paid = session.payment_status == 'paid'
+
+      if (paid) {
         let orders = fs.readFileSync("orders.json");
         let orderData = JSON.parse(orders);
 
+        // check if orderId already in json-file
         let orderItem = orderData.find(order => order.sessionId === sessionId)
+       
+        // if not 
         if (!orderItem) {
           orderItem = {
               sessionId: session.id,
@@ -201,19 +219,20 @@ app.post('/create-customer', async (req, res) => {
               total: session.amount_total,
               date: dateOrdered,
             
-          };
+          }
+          
           orderData.push(orderItem);
           fs.writeFileSync("orders.json", JSON.stringify(orderData));
-        
-    
         }
       } else {
-        res.status(200).json(confirmedOrder = false);
+
+        res.status(404).json(notPaid);
+        // something else here? how to handle paid?
       }
     
     });
 
-
+   
 
 
     const endpointSecret = "whsec_e6bacd77318085612bc6145497a05f1147f690aed44be0efb52f76e87432831c";
