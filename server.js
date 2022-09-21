@@ -61,50 +61,42 @@ const checkCustomer = () => {
 /// name-change, uppdatera kund? 
 // kolla, finns det kund? 
 // 
- app.post('/check-if-customer-exists', async (req, res) => {
-  let existingCustomers = await stripe.customers.list({email : req.body.email});
-if(existingCustomers.data.length){
-    console.log('this cus already exists bro')
-    console.log(existingCustomers, 'the customer thAT EXISTS')
-    console.log(existingCustomers.data[0].id)
-    res.json(existingCustomers.data[0].id)
+//  app.post('/check-if-customer-exists', async (req, res) => {
+//   let existingCustomers = await stripe.customers.list({email : req.body.email});
+// if(existingCustomers.data.length){
+//     console.log('this cus already exists bro')
+//     console.log(existingCustomers, 'the customer thAT EXISTS')
+//     console.log(existingCustomers.data[0].id)
+//     res.json(existingCustomers.data[0].id)
     
-}else{
+// }else{
     
-      const customer = await stripe.customers.create({
-        email: req.body.email,
-        name: req.body.name,
-        phone: req.body.phone,
+//       const customer = await stripe.customers.create({
+//         email: req.body.email,
+//         name: req.body.name,
+//         phone: req.body.phone,
        
-      });
+//       });
    
-      addedcustomers.push(customer)
-      console.log('customer created?');
-      console.log(customer, 'new customer ')
-      res.json(customer.id) 
-}
-}) 
-/* 
+//       addedcustomers.push(customer)
+//       console.log('customer created?');
+//       console.log(customer, 'new customer ')
+//       res.json(customer.id) 
+// }
+// }) 
+
 app.post('/check-if-customer-exists', async (req, res) => {
-  try {
-    
-const customers = await stripe.customers.list({
-  email: req.body.email
-}); 
-console.log(customers)
+  try { 
+  let existingCustomers = await stripe.customers.list({email : req.body.email});
 
-
-let existingCustomer = customers.data.find((user) => {
-  console.log(user.email, 'all the emails?')
-  console.log(req.body.email, 'bod?')
-  return user.email === req.body.email
-})
-
-if(!existingCustomer) {
-  throw new Error("customer does not exist...")
-}
-console.log(existingCustomer, 'here')
-res.status(200).json(existingCustomer)
+  if(existingCustomers.data.length){
+    res.json(existingCustomers.data[0].id)
+    console.log('this cus already exists bro')
+    console.log(existingCustomers.data[0].id)
+  }else {
+    console.log("Customer dont exist")
+    res.json({})
+  }
 
   }catch(err) {
     console.log(err, 'no customer found')
@@ -120,13 +112,14 @@ app.post('/create-customer', async (req, res) => {
       console.log(user);
       if (user.email === req.body.email){
         console.log('user match')
+        return user
         //return user.email == req.body.email
 
         // potentially save customer to json instead, to keep user outside of server-restart
       }
     })
     if(existingCustomer){
-      return res.json('user exists')
+      res.json(existingCustomer.data[0].id)
   
     }
 
@@ -137,7 +130,6 @@ app.post('/create-customer', async (req, res) => {
      
     });
  
-    addedcustomers.push(customer)
     console.log('if not exists');
     res.json(customer.id)
   
@@ -147,7 +139,7 @@ app.post('/create-customer', async (req, res) => {
   }
 
 }) 
- */
+
   app.post("/create-checkout-session", async (req, res) => {
     let boughtItems = req.body.cart;
     let itemsToPay = [];
