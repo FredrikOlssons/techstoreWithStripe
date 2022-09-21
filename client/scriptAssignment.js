@@ -4,7 +4,9 @@ var shoppingCart = [];
 var isItemsViewVisible = false;
 
 let stripe = Stripe(
+
   "pk_test_51Lh9ksEgr5mkNVomNdFIQqM4OAE4k2mr70fQVGl1ztse10hIYHDvRV9wfD1MrAqaRuhKiHTXI1Bl9jXmp2d3F0Pd00SASOXsIm"
+
 )
 
 /* Fetch data from the json file into a javascript object */
@@ -326,7 +328,6 @@ const createUser = async () => {
     console.error("Error:", err);
   }
 }
-
 
 // for form, edit 
 function ValidationForm() {

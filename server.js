@@ -1,5 +1,5 @@
 require('dotenv').config();
-constfs = require("fs")
+const fs = require("fs")
 const { Console } = require('console');
 const express = require('express');
 const { runInNewContext } = require('vm');
@@ -58,6 +58,26 @@ const checkCustomer = () => {
   
 }
 
+
+/* app.post('/check-if-customer-exists', async (req, res) => {
+  let existingCustomers = await stripe.customers.list({email : req.body.email});
+if(existingCustomers.data.length){
+    console.log('this cus already exists bro')
+}else{
+    
+      const customer = await stripe.customers.create({
+        email: req.body.email,
+        name: req.body.name,
+        phone: req.body.phone,
+       
+      });
+   
+      addedcustomers.push(customer)
+      console.log('customer created?');
+      console.log(customer)
+      res.json(customer.id)
+}
+}) */
 
 app.post('/check-if-customer-exists', async (req, res) => {
   try {
@@ -120,7 +140,7 @@ app.post('/create-customer', async (req, res) => {
     res.status(404).json(err)
   }
 
-})
+}) 
 
   app.post("/create-checkout-session", async (req, res) => {
     let boughtItems = req.body.cart;
@@ -141,7 +161,6 @@ app.post('/create-customer', async (req, res) => {
       itemsToPay.push(items);     
     });
 
-
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
 
@@ -151,35 +170,47 @@ app.post('/create-customer', async (req, res) => {
         mode: "payment",
         submit_type: 'pay',
 
-        success_url: `http://localhost:3000/success.html??session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `http://localhost:3000/success.html?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: "https://localhost:3000/cancel.html",
       });
       console.log(session)
       res.status(200).json(session.id);
     });
 
+    let dateOrdered = new Date().toLocaleString();
 
+    app.post("/confirm/:sessionId", async (req, res) => {
+    
+      const sessionId = req.params.sessionId;
+      console.log(sessionId)
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      if (session.payment_status === "paid") {
+        let orders = fs.readFileSync("orders.json");
+        let orderData = JSON.parse(orders);
 
-    app.get("/orders", async (req, res) => {
-      if (!req.session.id) {
-        return res.json(false);
+        let orderItem = orderData.find(order => order.sessionId === sessionId)
+        if (!orderItem) {
+          orderItem = {
+              sessionId: session.id,
+              customerName: session.customer_details.name,
+              customerDetails: session.customer_details.email,
+              total: session.amount_total,
+              date: dateOrdered,
+            
+          };
+          orderData.push(orderItem);
+          fs.writeFileSync("orders.json", JSON.stringify(orderData));
+        
+    
+        }
+      } else {
+        res.status(200).json(confirmedOrder = false);
       }
-      let userID = req.session.customerID;
-      let unParsedOrderlist = fs.readFileSync("verification.json");
-      let orderList = JSON.parse(unParsedOrderlist);
-      const result = orderList.filter((order) => order.customerID === userID);
-      res.json(result);
+    
     });
 
 
 
-
-/*     app.post('/validation', async (req,res ) => {
-      const sessionId = req.body.sessionId; 
-    console.log(sessionId, 'session')
-      const payment = await stripe.checkout.sessions.retrieve()
-    })
- */
 
     const endpointSecret = "whsec_e6bacd77318085612bc6145497a05f1147f690aed44be0efb52f76e87432831c";
 
