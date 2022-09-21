@@ -140,88 +140,91 @@ app.post('/create-customer', async (req, res) => {
 
 }) 
 
-  app.post("/create-checkout-session", async (req, res) => {
-    let boughtItems = req.body.cart;
-    let itemsToPay = [];
-    boughtItems.forEach((item) => {
-      
-      let items = {
-        price_data: {
-          currency: "sek",
-          product_data: {
-            name: item.title,
-            description: item.description,
-          },
-          unit_amount: item.price * 100
-        },
-        quantity: 1,
-      };
-      itemsToPay.push(items);     
-    });
-
-    const session = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
-
-        line_items: itemsToPay,
-        customer: req.body.customerToCheckout.id,
-
-        mode: "payment",
-        submit_type: 'pay',
-
-        success_url: `http://localhost:3000/success.html?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: "https://localhost:3000/cancel.html",
-      });
-      console.log(session)
-      res.status(200).json(session.id);
-    });
-
-    let dateOrdered = new Date().toLocaleString();
-
-
-   
+app.post("/create-checkout-session", async (req, res) => {
+  let boughtItems = req.body.cart;
+  let itemsToPay = [];
+  boughtItems.forEach((item) => {
     
+    let items = {
+      price_data: {
+        currency: "sek",
+        product_data: {
+          name: item.title,
+          description: item.description,
+
+        },
+        unit_amount: item.price * 100
+      },
+      quantity: 1, // kanske något annat här
+
+    };
+    itemsToPay.push(items);     
+  });
+
+  const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+
+      line_items: itemsToPay,
+      customer: req.body.customerId,
+
+      mode: "payment",
+      submit_type: 'pay',
+
+      success_url: `http://localhost:3000/success.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: "http://localhost:3000/cancel.html",
+    });
+    console.log(session)
+    res.status(200).json(session.id);
+  });
+
+  let dateOrdered = new Date().toLocaleString();
+
+
+ 
   
 
-     
-    app.post("/confirm/:sessionId", async (req, res) => {
-      const sessionId = req.params.sessionId;
-      //console.log(sessionId)
-      let notPaid = false; 
-      const session = await stripe.checkout.sessions.retrieve(sessionId);
-
-      let paid = session.payment_status == 'paid'
-
-      if (paid) {
-        let orders = fs.readFileSync("orders.json");
-        let orderData = JSON.parse(orders);
-
-        // check if orderId already in json-file
-        let orderItem = orderData.find(order => order.sessionId === sessionId)
-       
-        // if not 
-        if (!orderItem) {
-          orderItem = {
-              sessionId: session.id,
-              customerName: session.customer_details.name,
-              customerDetails: session.customer_details.email,
-              total: session.amount_total,
-              date: dateOrdered,
-            
-          }
-          
-          orderData.push(orderItem);
-          fs.writeFileSync("orders.json", JSON.stringify(orderData));
-        }
-      } else {
-
-        res.status(404).json(notPaid);
-        // something else here? how to handle paid?
-      }
-    
-    });
 
    
+  app.post("/confirm/:sessionId", async (req, res) => {
+    try {
+    const sessionId = req.params.sessionId;
+    //console.log(sessionId)
+    let notPaid = false; 
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
 
+    let paid = session.payment_status == 'paid'
+
+    if (paid) {
+      let orders = fs.readFileSync("orders.json");
+      let orderData = JSON.parse(orders);
+
+      // check if orderId already in json-file
+      let orderItem = orderData.find(order => order.sessionId === sessionId)
+     
+      // if not 
+      if (!orderItem) {
+        orderItem = {
+            sessionId: session.id,
+            customerName: session.customer_details.name,
+            customerDetails: session.customer_details.email,
+            total: session.amount_total,
+            date: dateOrdered,
+          
+        }
+        
+        orderData.push(orderItem);
+        fs.writeFileSync("orders.json", JSON.stringify(orderData));
+        res.status(200).json(orderItem)
+        return 
+    }
+}
+res.status(401).json(notPaid) 
+} catch (err) {
+res.status(400).json(err.message)
+}
+
+})
+ 
 
     const endpointSecret = "whsec_e6bacd77318085612bc6145497a05f1147f690aed44be0efb52f76e87432831c";
 
