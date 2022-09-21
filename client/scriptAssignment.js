@@ -230,10 +230,10 @@ const createSession = async (cart, customerToCheckout) => {
 }
 
 
-const checkUser = async () => {
+const checkUser = async (email) => {
   //let email = document.getElementById('email').value
   let userEmail = {
-    email: document.getElementById('email').value
+    email 
   }
  
   let response = await fetch('/check-if-customer-exists', {
@@ -250,10 +250,9 @@ const checkUser = async () => {
 
 
 let customerCheck = document.getElementById('get-all-customers')
-customerCheck.addEventListener('click', () => {
-  setTimeout( async () => {
+customerCheck.addEventListener('click', async () => {
     
-    let checkForCustomer = await checkUser();
+    let checkForCustomer = await checkUser(document.getElementById('email').value);
     console.log(checkForCustomer);
     
     if (Object.keys(checkForCustomer).length === 0) {
@@ -287,8 +286,14 @@ customerCheck.addEventListener('click', () => {
       
       inputContainer.append(fullNameDiv, adressDiv, phoneDiv)
 
-      newCustomer.addEventListener('click', () => {
-        customerToCheckout = createUser()
+
+      newCustomer.addEventListener('click', async () => {
+        let customer = {
+          email: document.getElementById('email').value,
+          name: document.getElementById('name').value,
+          phone: document.getElementById('telephone').value
+        }
+        customerToCheckout = await createUser(customer)
         
         if (customerToCheckout) {
           proceedButton.style.visibility = "visible";
@@ -300,21 +305,11 @@ customerCheck.addEventListener('click', () => {
     console.log(checkForCustomer, 'kollade kund');
     customerToCheckout = checkForCustomer
     return customerToCheckout
-  }, 1000);
   })
-  
 
 
-
-
-const createUser = async () => {
+const createUser = async (customer) => {
   try {
-    let customer = {
-      email: document.getElementById('email').value,
-      name: document.getElementById('name').value,
-      phone: document.getElementById('telephone').value
-    }
-
     let response = await fetch("/create-customer", {
       headers: { 'Content-Type': 'application/json' },
       method: "POST",
