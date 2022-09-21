@@ -98,8 +98,6 @@ let existingCustomer = customers.data.find((user) => {
   console.log(user.email, 'all the emails?')
   console.log(req.body.email, 'bod?')
   return user.email === req.body.email
-  
-  
 })
 
 if(!existingCustomer) {
@@ -161,12 +159,10 @@ app.post('/create-customer', async (req, res) => {
           product_data: {
             name: item.title,
             description: item.description,
-
           },
           unit_amount: item.price * 100
         },
-        quantity: 1, // kanske något annat här
-
+        quantity: 1,
       };
       itemsToPay.push(items);     
     });
@@ -175,7 +171,7 @@ app.post('/create-customer', async (req, res) => {
         payment_method_types: ["card"],
 
         line_items: itemsToPay,
-        customer: req.body.customerId,
+        customer: req.body.customerToCheckout.id,
 
         mode: "payment",
         submit_type: 'pay',

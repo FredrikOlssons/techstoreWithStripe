@@ -4,7 +4,9 @@ var shoppingCart = [];
 var isItemsViewVisible = false;
 
 let stripe = Stripe(
-  "pk_test_51LgOtTKWccXv1xw6iIpmlLLcEhzCGEE64Oqq0Efdih2dgMQnu4HMm2foKxyOJbS6AML7UodL1kwHfZ1tvcQsycMi00ZvQoOSrs"
+
+  "pk_test_51Lh9ksEgr5mkNVomNdFIQqM4OAE4k2mr70fQVGl1ztse10hIYHDvRV9wfD1MrAqaRuhKiHTXI1Bl9jXmp2d3F0Pd00SASOXsIm"
+
 )
 
 /* Fetch data from the json file into a javascript object */
@@ -18,6 +20,13 @@ fetch("./assets/data.json")
   });
 
 
+  /* Proceed button */
+  let customerToCheckout = ''
+  var proceedButton = document.createElement("button")
+  proceedButton.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i>' + "&nbsp;&nbsp;&nbsp;" + "To checkout";
+  proceedButton.style.visibility = "hidden";
+  let newCustomer = document.getElementById("create-new-customer")
+  newCustomer.style.visibility = "hidden";
 
   let customerForm = document.getElementById("main")
   
@@ -37,22 +46,6 @@ fetch("./assets/data.json")
   let inputContainer = document.createElement("div")
   inputContainer.classList.add("inputContainer")
   
-  let fullNameDiv = document.createElement("div")
-  let fullnameInput = document.createElement("input")
-  fullnameInput.name="Name"
-  fullnameInput.setAttribute("id", "name")
-  fullnameInput.placeholder = "Full name"
-  fullnameInput.type ="text"
-
-  
-  let adressDiv = document.createElement("div")
-  let adressInput = document.createElement("input")
-  adressInput.setAttribute("id", "adress")
-  adressInput.name="adress"
-  adressInput.placeholder = "Adress"
-  adressInput.type = "text"
-
-  
   let emailDiv = document.createElement("div")
   let emailInput = document.createElement("input")
   emailInput.setAttribute("id", "email")
@@ -61,22 +54,9 @@ fetch("./assets/data.json")
   emailInput.type = "text"
 
   
-  let phoneDiv = document.createElement("div")
-  let phoneInput = document.createElement("input")
-  phoneInput.setAttribute("id", "telephone")
-  phoneInput.name="Telephone"
-  phoneInput.placeholder = "Phone Number"
-  phoneInput.type = "text"
-
-
-
-  
-  fullNameDiv.append(fullnameInput)
-  adressDiv.append(adressInput)
   emailDiv.append(emailInput)
-  phoneDiv.append(phoneInput)
   
-  inputContainer.append(fullNameDiv, adressDiv, emailDiv, phoneDiv)
+  inputContainer.append(emailDiv)
   form.append(inputContainer)
   customerForm.append(formHead, form)
   
@@ -217,6 +197,7 @@ function createShoppingSummary() {
   var priceLabel = document.createElement("h2");
   priceLabel.innerText = "Totalt pris: " + totalPrice + " kr";
 
+
   /* Proceed button */
   var proceedButton = document.createElement("button");
   proceedButton.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i>' + "&nbsp;&nbsp;&nbsp;" + "To checkout";
@@ -228,14 +209,13 @@ function createShoppingSummary() {
     let createNewCustomer = await checkOrCreateUser()
     if (createNewCustomer) {
       setTimeout( async () => {
-        let createSess = await createSession(shoppingCart, createNewCustomer)
+        let createSess = await createSession(shoppingCart, customerToCheckout)
+
+
         console.log(createSess);
         if (createSess) {
           return await stripe.redirectToCheckout({ sessionId: createSess });
           }
-        }, 1000)
-        
-      }
   })
 
   var info = document.createElement("div");
@@ -250,14 +230,18 @@ function createShoppingSummary() {
 
 
 
+
 /// functions for stripe/customers/session below ////////
 
-const createSession = async (cart, customerId) => {
+
+const createSession = async (cart, customerToCheckout) => {
+
   try {
+    
     let response = await fetch("/create-checkout-session", {
       headers: { 'Content-Type': 'application/json' },
       method: "POST",
-      body: JSON.stringify({cart, customerId})
+      body: JSON.stringify({cart, customerToCheckout})
     })
         let sessionId = await response.json() 
         console.log(sessionId, 'session id');
@@ -269,31 +253,30 @@ const createSession = async (cart, customerId) => {
 }
 
 
-/* const checkUser = async () => {
+
+const checkUser = async (email) => {
+
   //let email = document.getElementById('email').value
   //// SKICKA MED CUSTOMER, plocka ut email för check på om customer finns. skicka med hela customer till att skapa en ny customer :))))))))
   let userEmail = {
-    email: document.getElementById('email').value
+    email 
   }
  
-  let response = fetch('/check-if-customer-exists', {
+  let response = await fetch('/check-if-customer-exists', {
     headers: { 'Content-Type': 'application/json' },
     method: "POST",
     body: JSON.stringify(userEmail) 
     
-  })  .then((result) => {
-    console.log(result)
-    return result.json(userEmail.email);
-  })
-  .then((answer) => {
-    console.log(answer)
-    
-  
-})
-.catch((err) => console.error(err));
-}
+  })  
+  let answer = await response.json();
+  return answer
+  }
+
+
+
 
 let customerCheck = document.getElementById('get-all-customers')
+
 customerCheck.addEventListener('click', () => {
   checkUser();
 } ) */
@@ -339,6 +322,67 @@ customerCheck.addEventListener('click', () => {
       phone: document.getElementById('telephone').value
     }
 
+customerCheck.addEventListener('click', async () => {
+    
+    let checkForCustomer = await checkUser(document.getElementById('email').value);
+    console.log(checkForCustomer);
+    
+    if (Object.keys(checkForCustomer).length === 0) {
+      newCustomer.style.visibility = 'visible'
+      console.log('no customer');
+      
+      let fullNameDiv = document.createElement("div")
+      let fullnameInput = document.createElement("input")
+      fullnameInput.name="Name"
+      fullnameInput.setAttribute("id", "name")
+      fullnameInput.placeholder = "Full name"
+      fullnameInput.type ="text"
+    
+      let adressDiv = document.createElement("div")
+      let adressInput = document.createElement("input")
+      adressInput.setAttribute("id", "adress")
+      adressInput.name="adress"
+      adressInput.placeholder = "Adress"
+      adressInput.type = "text"
+      
+      let phoneDiv = document.createElement("div")
+      let phoneInput = document.createElement("input")
+      phoneInput.setAttribute("id", "telephone")
+      phoneInput.name="Telephone"
+      phoneInput.placeholder = "Phone Number"
+      phoneInput.type = "text"
+    
+      fullNameDiv.append(fullnameInput)
+      adressDiv.append(adressInput)
+      phoneDiv.append(phoneInput)
+      
+      inputContainer.append(fullNameDiv, adressDiv, phoneDiv)
+
+
+      newCustomer.addEventListener('click', async () => {
+        let customer = {
+          email: document.getElementById('email').value,
+          name: document.getElementById('name').value,
+          phone: document.getElementById('telephone').value
+        }
+        customerToCheckout = await createUser(customer)
+        
+        if (customerToCheckout) {
+          proceedButton.style.visibility = "visible";
+          console.log(customerToCheckout, 'skapade kund');
+        }
+      })
+    } else
+    proceedButton.style.visibility = "visible";
+    console.log(checkForCustomer, 'kollade kund');
+    customerToCheckout = checkForCustomer
+    return customerToCheckout
+  })
+
+
+
+const createUser = async (customer) => {
+  try {
     let response = await fetch("/create-customer", {
       headers: { 'Content-Type': 'application/json' },
       method: "POST",
@@ -352,7 +396,11 @@ customerCheck.addEventListener('click', () => {
     console.error("Error:", err);
   }
 
-} */
+
+} 
+
+}
+
 
 // for form, edit 
 function ValidationForm() {
