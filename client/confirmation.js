@@ -4,8 +4,10 @@ const validate = async () => {
     try {
       const sessionParams = new URLSearchParams(window.location.search);
       const sessionId = sessionParams.get('session_id');
+      
   
       if (!sessionId) {
+        window.location.replace('http://localhost:3000')
         throw new Error("Session id missing.")
       }
   
@@ -13,11 +15,11 @@ const validate = async () => {
         headers: { "Content-Type": "application/json" },
         method: "POST",
       });
-      const { confirmedOrder } = await response.json();
-      return confirmedOrder;
+      const {paid} = await response.json();
+      console.log(paid, 'HAJ')
+      return paid;
     } catch (err) {
       console.error(err, 'something went wrong')
-      // potentially redirect? 
       
     }
   }

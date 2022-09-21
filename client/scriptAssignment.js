@@ -197,8 +197,21 @@ function createShoppingSummary() {
   var priceLabel = document.createElement("h2");
   priceLabel.innerText = "Totalt pris: " + totalPrice + " kr";
 
-  proceedButton.addEventListener('click', async () => {      
+
+  /* Proceed button */
+  var proceedButton = document.createElement("button");
+  proceedButton.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i>' + "&nbsp;&nbsp;&nbsp;" + "To checkout";
+
+
+
+  // below, functions to create session and for redirect
+  proceedButton.addEventListener('click', async () => {
+    let createNewCustomer = await checkOrCreateUser()
+    if (createNewCustomer) {
+      setTimeout( async () => {
         let createSess = await createSession(shoppingCart, customerToCheckout)
+
+
         console.log(createSess);
         if (createSess) {
           return await stripe.redirectToCheckout({ sessionId: createSess });
@@ -212,7 +225,17 @@ function createShoppingSummary() {
   return info;
 }
 
+
+
+
+
+
+
+/// functions for stripe/customers/session below ////////
+
+
 const createSession = async (cart, customerToCheckout) => {
+
   try {
     
     let response = await fetch("/create-checkout-session", {
@@ -230,8 +253,11 @@ const createSession = async (cart, customerToCheckout) => {
 }
 
 
+
 const checkUser = async (email) => {
+
   //let email = document.getElementById('email').value
+  //// SKICKA MED CUSTOMER, plocka ut email för check på om customer finns. skicka med hela customer till att skapa en ny customer :))))))))
   let userEmail = {
     email 
   }
@@ -250,6 +276,52 @@ const checkUser = async (email) => {
 
 
 let customerCheck = document.getElementById('get-all-customers')
+
+customerCheck.addEventListener('click', () => {
+  checkUser();
+} ) */
+
+
+///// todo, 
+
+const checkOrCreateUser = async () => {
+  try {
+    let userEmail = {
+      email: document.getElementById('email').value
+    }
+    let customer = {
+      email: document.getElementById('email').value,
+      name: document.getElementById('name').value,
+      phone: document.getElementById('telephone').value
+    }
+
+    let response = await fetch("/check-if-customer-exists", {
+      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      body: JSON.stringify(customer, userEmail)
+    })
+
+    let customerId = await response.json()
+    return customerId
+
+  } catch (err) {
+    console.error("Error:", err);
+  }
+
+}
+let customerCheck = document.getElementById('get-all-customers')
+customerCheck.addEventListener('click', () => {
+  checkOrCreateUser();
+})
+
+/* const createUser = async () => {
+  try {
+    let customer = {
+      email: document.getElementById('email').value,
+      name: document.getElementById('name').value,
+      phone: document.getElementById('telephone').value
+    }
+
 customerCheck.addEventListener('click', async () => {
     
     let checkForCustomer = await checkUser(document.getElementById('email').value);
@@ -308,6 +380,7 @@ customerCheck.addEventListener('click', async () => {
   })
 
 
+
 const createUser = async (customer) => {
   try {
     let response = await fetch("/create-customer", {
@@ -322,7 +395,12 @@ const createUser = async (customer) => {
   } catch (err) {
     console.error("Error:", err);
   }
+
+
+} 
+
 }
+
 
 // for form, edit 
 function ValidationForm() {
