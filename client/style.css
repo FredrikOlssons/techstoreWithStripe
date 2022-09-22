@@ -152,7 +152,7 @@ button:hover {
   }
   form {
     margin: 0 auto;
-    width: 600px;
+    width: 300px;
   }
   form input {
     padding: 10px;
@@ -184,4 +184,36 @@ button:hover {
 
   .inputContainer {
     justify-content: center;
+  }
+
+  .displayNone {
+    display: none;
+  }
+
+  #customerBtns {
+    display: flex;
+    
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    
+  }
+
+  #formNBtns {
+    display: flex;
+    justify-content: center;
+    gap: 200px;
+    color: black;
+    min-height: 200px;
+  }
+  
+  #form {
+    display: flex;
+    flex-direction: column;
+
+  }
+
+  h2 {
+    margin-top: 5px;
+    margin-bottom: 15px;
   }

@@ -2,7 +2,7 @@ var itemsData;
 var shoppingCart = [];
 var isItemsViewVisible = false;
 let stripe = Stripe(
-  "pk_test_51LiJ5BAbJ9b1S6Uatr6niXscQAEEPN1S6rc7DiGD3m7lzzEPnSX4nhbfXuopYhkG5FemOhT8Y7xFfe9spXyCBoDW00G510cMjL"
+  "pk_test_51Lh9ksEgr5mkNVomNdFIQqM4OAE4k2mr70fQVGl1ztse10hIYHDvRV9wfD1MrAqaRuhKiHTXI1Bl9jXmp2d3F0Pd00SASOXsIm"
 )
 /* Fetch data from the json file into a javascript object */
 fetch("./assets/data.json")
@@ -14,13 +14,14 @@ fetch("./assets/data.json")
     createUIFromLoadedItemsData();
   });
   /* Proceed button */
+  // let formDiv = document.getElementById('form')
   let customerToCheckout = ''
   var proceedButton = document.createElement("button")
   proceedButton.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i>' + "&nbsp;&nbsp;&nbsp;" + "To checkout";
   proceedButton.style.visibility = "hidden";
   let newCustomer = document.getElementById("create-new-customer")
   newCustomer.style.visibility = "hidden";
-  let customerForm = document.getElementById("main")
+  let customerForm = document.getElementById("form")
   
   let formHead = document.createElement("h2")
   formHead.innerText = "Customer Registration"
@@ -36,6 +37,8 @@ fetch("./assets/data.json")
   })
   let inputContainer = document.createElement("div")
   inputContainer.classList.add("inputContainer")
+  let newCustomerInputs = document.createElement("div");
+newCustomerInputs.classList.add("displayNone");
   
   let emailDiv = document.createElement("div")
   let emailInput = document.createElement("input")
@@ -44,9 +47,35 @@ fetch("./assets/data.json")
   emailInput.placeholder = "E-Mail"
   emailInput.type = "text"
   
-  emailDiv.append(emailInput)
-  
-  inputContainer.append(emailDiv)
+let fullNameDiv = document.createElement("div");
+let fullnameInput = document.createElement("input");
+fullnameInput.name = "Name";
+fullnameInput.setAttribute("id", "name");
+fullnameInput.placeholder = "Full name";
+fullnameInput.type = "text";
+
+let adressDiv = document.createElement("div");
+let adressInput = document.createElement("input");
+adressInput.setAttribute("id", "adress");
+adressInput.name = "adress";
+adressInput.placeholder = "Adress";
+adressInput.type = "text";
+
+let phoneDiv = document.createElement("div");
+let phoneInput = document.createElement("input");
+phoneInput.setAttribute("id", "telephone");
+phoneInput.name = "Telephone";
+phoneInput.placeholder = "Phone Number";
+phoneInput.type = "text";
+
+fullNameDiv.append(fullnameInput);
+adressDiv.append(adressInput);
+phoneDiv.append(phoneInput);
+
+emailDiv.append(emailInput);
+
+newCustomerInputs.append(fullNameDiv, adressDiv, phoneDiv);
+  inputContainer.append(emailDiv, newCustomerInputs)
   form.append(inputContainer)
   customerForm.append(formHead, form)
   
@@ -203,64 +232,58 @@ const checkUser = async (email) => {
       let answer = await response.json();
       return answer
       }
-    
-    
+
+      
     let customerCheck = document.getElementById('get-all-customers')
 
-    customerCheck.addEventListener('click', async () => {
+    newCustomer.addEventListener('click', async () => {
+      let customer = {
+        email: document.getElementById('email').value,
+        name: document.getElementById('name').value,
+        phone: document.getElementById('telephone').value
+      }
+      customerToCheckout = await createUser(customer)
+      newCustomer.style.visibility = 'hidden'
 
+      if (customerToCheckout) {
+        alert('New customer created, feel free to proceed to checkout')
+        newCustomer.style.visibility = 'hidden'
+        proceedButton.style.visibility = "visible";
+        newCustomerInputs.classList.add("displayNone");
+        console.log(customerToCheckout, 'skapade kund');
+      }
+    })
+
+    customerCheck.addEventListener('click', async () => {
+      customerToCheckout = ''
+      proceedButton.style.visibility = "hidden";
         let checkForCustomer = await checkUser(document.getElementById('email').value);
         console.log(checkForCustomer);
 
     if (Object.keys(checkForCustomer).length === 0) {
       newCustomer.style.visibility = 'visible'
+      newCustomerInputs.classList.remove("displayNone");
+      alert('Customer not found, please try again or register a new customer')
       console.log('no customer');
+
       
-      let fullNameDiv = document.createElement("div")
-      let fullnameInput = document.createElement("input")
-      fullnameInput.name="Name"
-      fullnameInput.setAttribute("id", "name")
-      fullnameInput.placeholder = "Full name"
-      fullnameInput.type ="text"
-    
-      let adressDiv = document.createElement("div")
-      let adressInput = document.createElement("input")
-      adressInput.setAttribute("id", "adress")
-      adressInput.name="adress"
-      adressInput.placeholder = "Adress"
-      adressInput.type = "text"
       
-      let phoneDiv = document.createElement("div")
-      let phoneInput = document.createElement("input")
-      phoneInput.setAttribute("id", "telephone")
-      phoneInput.name="Telephone"
-      phoneInput.placeholder = "Phone Number"
-      phoneInput.type = "text"
+      
+    } else if (Object.keys(checkForCustomer).length != 0) {
+      alert('Customer found, feel free to proceed to checkout')
+      newCustomer.style.visibility = 'hidden'
+      proceedButton.style.visibility = "visible";
+      newCustomerInputs.classList.add("displayNone");
+      console.log(checkForCustomer, 'kollade kund');
+      customerToCheckout = checkForCustomer
+      
+    } else {
+      console.log('You thief!! We dont want you here')
+      window.location.reload
+    }
     
-      fullNameDiv.append(fullnameInput)
-      adressDiv.append(adressInput)
-      phoneDiv.append(phoneInput)
-
-      inputContainer.append(fullNameDiv, adressDiv, phoneDiv)
-
-      newCustomer.addEventListener('click', async () => {
-        let customer = {
-          email: document.getElementById('email').value,
-          name: document.getElementById('name').value,
-          phone: document.getElementById('telephone').value
-        }
-        customerToCheckout = await createUser(customer)
-
-        if (customerToCheckout) {
-          proceedButton.style.visibility = "visible";
-          console.log(customerToCheckout, 'skapade kund');
-        }
-      })
-    } else
-    proceedButton.style.visibility = "visible";
-    console.log(checkForCustomer, 'kollade kund');
-    customerToCheckout = checkForCustomer
     return customerToCheckout
+    
   
   })
 

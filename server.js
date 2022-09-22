@@ -108,36 +108,18 @@ app.post('/check-if-customer-exists', async (req, res) => {
 
 app.post('/create-customer', async (req, res) => {
   try {
-    let existingCustomer = addedcustomers.find((user) => {
-      console.log(user);
-      if (user.email === req.body.email){
-        console.log('user match')
-        return user
-        //return user.email == req.body.email
-
-        // potentially save customer to json instead, to keep user outside of server-restart
-      }
-    })
-    if(existingCustomer){
-      res.json(existingCustomer.data[0].id)
-  
-    }
-
+    let existingCustomers = await stripe.customers.list({email : req.body.email});
+    if(existingCustomers.data.length){
     const customer = await stripe.customers.create({
       email: req.body.email,
       name: req.body.name,
       phone: req.body.phone,
-     
-    });
- 
-    console.log('if not exists');
+    });}
+    console.log('custumer finns redan');
     res.json(customer.id)
-  
-    
   }catch (err){
     res.status(404).json(err)
   }
-
 }) 
 
 app.post("/create-checkout-session", async (req, res) => {
@@ -165,7 +147,7 @@ app.post("/create-checkout-session", async (req, res) => {
       payment_method_types: ["card"],
 
       line_items: itemsToPay,
-      customer: req.body.customerId,
+      customer: req.body.customerToCheckout,
 
       mode: "payment",
       submit_type: 'pay',
