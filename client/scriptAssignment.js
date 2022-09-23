@@ -3,7 +3,7 @@ var shoppingCart = [];
 var isItemsViewVisible = false;
 let stripe = Stripe(
   "pk_test_51Lh9ksEgr5mkNVomNdFIQqM4OAE4k2mr70fQVGl1ztse10hIYHDvRV9wfD1MrAqaRuhKiHTXI1Bl9jXmp2d3F0Pd00SASOXsIm"
-)
+);
 /* Fetch data from the json file into a javascript object */
 fetch("./assets/data.json")
   .then(function (response) {
@@ -13,40 +13,42 @@ fetch("./assets/data.json")
     itemsData = data;
     createUIFromLoadedItemsData();
   });
-  /* Proceed button */
-  // let formDiv = document.getElementById('form')
-  let customerToCheckout = ''
-  var proceedButton = document.createElement("button")
-  proceedButton.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i>' + "&nbsp;&nbsp;&nbsp;" + "To checkout";
-  proceedButton.style.visibility = "hidden";
-  let newCustomer = document.getElementById("create-new-customer")
-  newCustomer.style.visibility = "hidden";
-  let customerForm = document.getElementById("form")
-  
-  let formHead = document.createElement("h2")
-  formHead.innerText = "Customer Registration"
-  
-  let form = document.createElement("form")
-  form.classList.add("form")
-  form.name="RegForm"
-  form.method = "post"
-  form.action="/form/submit.php"
-  // form.class.add("w3docs form-hide")
-  form.addEventListener("onsubmit", () => {
-    return ValidationForm()
-  })
-  let inputContainer = document.createElement("div")
-  inputContainer.classList.add("inputContainer")
-  let newCustomerInputs = document.createElement("div");
+/* Proceed button */
+let customerToCheckout = "";
+var proceedButton = document.createElement("button");
+proceedButton.innerHTML =
+  '<i class="fa fa-check" aria-hidden="true"></i>' +
+  "&nbsp;&nbsp;&nbsp;" +
+  "To checkout";
+proceedButton.style.visibility = "hidden";
+let newCustomer = document.getElementById("create-new-customer");
+newCustomer.style.visibility = "hidden";
+let customerForm = document.getElementById("form");
+
+let formHead = document.createElement("h2");
+formHead.innerText = "Customer Registration";
+
+let form = document.createElement("form");
+form.classList.add("form");
+form.name = "RegForm";
+form.method = "post";
+form.action = "/form/submit.php";
+// form.class.add("w3docs form-hide")
+form.addEventListener("onsubmit", () => {
+  return ValidationForm();
+});
+let inputContainer = document.createElement("div");
+inputContainer.classList.add("inputContainer");
+let newCustomerInputs = document.createElement("div");
 newCustomerInputs.classList.add("displayNone");
-  
-  let emailDiv = document.createElement("div")
-  let emailInput = document.createElement("input")
-  emailInput.setAttribute("id", "email")
-  emailInput.name="Email"
-  emailInput.placeholder = "E-Mail"
-  emailInput.type = "text"
-  
+
+let emailDiv = document.createElement("div");
+let emailInput = document.createElement("input");
+emailInput.setAttribute("id", "email");
+emailInput.name = "Email";
+emailInput.placeholder = "E-Mail";
+emailInput.type = "text";
+
 let fullNameDiv = document.createElement("div");
 let fullnameInput = document.createElement("input");
 fullnameInput.name = "Name";
@@ -71,19 +73,18 @@ phoneInput.type = "text";
 fullNameDiv.append(fullnameInput);
 adressDiv.append(adressInput);
 phoneDiv.append(phoneInput);
-
 emailDiv.append(emailInput);
 
 newCustomerInputs.append(fullNameDiv, adressDiv, phoneDiv);
-  inputContainer.append(emailDiv, newCustomerInputs)
-  form.append(inputContainer)
-  customerForm.append(formHead, form)
-  
-  
-  
-  /* Use the data to create a list of these object on your website */
+inputContainer.append(emailDiv, newCustomerInputs);
+form.append(inputContainer);
+customerForm.append(formHead, form);
+
+/* Use the data to create a list of these object on your website */
 function createUIFromLoadedItemsData() {
-  if (isItemsViewVisible) { return; }
+  if (isItemsViewVisible) {
+    return;
+  }
   isItemsViewVisible = true;
   /* Create a list of the products */
   var list = document.createElement("ul");
@@ -113,7 +114,10 @@ function createListItem(itemData) {
   price.innerText = "" + itemData.price + " kr";
   /* Button */
   var button = document.createElement("button");
-  button.innerHTML = '<i class="fa fa-cart-arrow-down" aria-hidden="true"></i>' + "&nbsp;&nbsp;&nbsp;" + "Lägg till i kundvagnen";
+  button.innerHTML =
+    '<i class="fa fa-cart-arrow-down" aria-hidden="true"></i>' +
+    "&nbsp;&nbsp;&nbsp;" +
+    "Lägg till i kundvagnen";
   button.onclick = function () {
     shoppingCart.push(itemData);
     counter = document.querySelector("#counter");
@@ -128,11 +132,14 @@ function createListItem(itemData) {
   return item;
 }
 function showShoppingCart() {
-  if (!isItemsViewVisible) { return; }
+  if (!isItemsViewVisible) {
+    return;
+  }
   isItemsViewVisible = false;
   /* Header */
   var header = document.createElement("h2");
-  header.innerHTML = '<i class="fa fa-shopping-cart" aria-hidden="true"></i>' + " Kundvagn";
+  header.innerHTML =
+    '<i class="fa fa-shopping-cart" aria-hidden="true"></i>' + " Kundvagn";
   /* Shopping list */
   var list = document.createElement("ul");
   for (var index = 0; index < shoppingCart.length; index++) {
@@ -146,9 +153,8 @@ function showShoppingCart() {
   content.appendChild(info);
   var container = document.querySelector("#main");
   container.replaceChild(content, container.firstChild);
-  // let visible = document.getElementById('form-hide')
-  // visible.classList.remove('form-hide')
 }
+
 function createShoppingCartItem(itemData, index) {
   /* Image */
   var image = document.createElement("img");
@@ -161,7 +167,10 @@ function createShoppingCartItem(itemData, index) {
   price.innerText = "" + itemData.price + " kr";
   /* Button */
   var button = document.createElement("button");
-  button.innerHTML = '<i class="fa fa-trash-o" aria-hidden="true"></i>' + "&nbsp;&nbsp;&nbsp;" + "Ta bort";
+  button.innerHTML =
+    '<i class="fa fa-trash-o" aria-hidden="true"></i>' +
+    "&nbsp;&nbsp;&nbsp;" +
+    "Ta bort";
   button.onclick = function () {
     /* Remove the item from the array */
     shoppingCart.splice(index, 1);
@@ -170,7 +179,7 @@ function createShoppingCartItem(itemData, index) {
     counter.innerText = shoppingCart.length;
     /* Update the UI list */
     isItemsViewVisible = true;
-    console.log(shoppingCart)
+    console.log(shoppingCart);
     showShoppingCart();
   };
   var item = document.createElement("li");
@@ -188,13 +197,13 @@ function createShoppingSummary() {
   }
   var priceLabel = document.createElement("h2");
   priceLabel.innerText = "Totalt pris: " + totalPrice + " kr";
-  proceedButton.addEventListener('click', async () => {      
-        let createSess = await createSession(shoppingCart, customerToCheckout)
-        console.log(createSess);
-        if (createSess) {
-          return await stripe.redirectToCheckout({ sessionId: createSess });
-          }
-  })
+  proceedButton.addEventListener("click", async () => {
+    let createSess = await createSession(shoppingCart, customerToCheckout);
+    console.log(createSess);
+    if (createSess) {
+      return await stripe.redirectToCheckout({ sessionId: createSess });
+    }
+  });
   var info = document.createElement("div");
   info.appendChild(priceLabel);
   info.appendChild(proceedButton);
@@ -202,134 +211,123 @@ function createShoppingSummary() {
 }
 const createSession = async (cart, customerToCheckout) => {
   try {
-    
     let response = await fetch("/create-checkout-session", {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
       method: "POST",
-      body: JSON.stringify({cart, customerToCheckout})
-    })
-        let sessionId = await response.json() 
-        console.log(sessionId, 'session id');
-        return sessionId;
-      
+      body: JSON.stringify({ cart, customerToCheckout }),
+    });
+    let sessionId = await response.json();
+    console.log(sessionId, "session id");
+    return sessionId;
   } catch (error) {
     console.error("Error:", error);
   }
-}
+};
 
 const checkUser = async (email) => {
-    //let email = document.getElementById('email').value
-    let userEmail = {
-      email 
-    }
+  //let email = document.getElementById('email').value
+  let userEmail = {
+    email,
+  };
+  let response = await fetch("/check-if-customer-exists", {
+    headers: { "Content-Type": "application/json" },
+    method: "POST",
+    body: JSON.stringify(userEmail),
+  });
+  let answer = await response.json();
+  return answer;
+};
 
-    let response = await fetch('/check-if-customer-exists', {
-        headers: { 'Content-Type': 'application/json' },
-        method: "POST",
-        body: JSON.stringify(userEmail) 
-        
-      })  
-      let answer = await response.json();
-      return answer
-      }
+let customerCheck = document.getElementById("get-all-customers");
 
-      
-    let customerCheck = document.getElementById('get-all-customers')
+newCustomer.addEventListener("click", async () => {
+  let customer = {
+    email: document.getElementById("email").value,
+    name: document.getElementById("name").value,
+    phone: document.getElementById("telephone").value,
+  };
+  customerToCheckout = await createUser(customer);
+  newCustomer.style.visibility = "hidden";
 
-    newCustomer.addEventListener('click', async () => {
-      let customer = {
-        email: document.getElementById('email').value,
-        name: document.getElementById('name').value,
-        phone: document.getElementById('telephone').value
-      }
-      customerToCheckout = await createUser(customer)
-      newCustomer.style.visibility = 'hidden'
+  if (customerToCheckout) {
+    alert("New customer created, feel free to proceed to checkout");
+    newCustomer.style.visibility = "hidden";
+    proceedButton.style.visibility = "visible";
+    newCustomerInputs.classList.add("displayNone");
+    console.log(customerToCheckout, "skapade kund");
+  }
+});
 
-      if (customerToCheckout) {
-        alert('New customer created, feel free to proceed to checkout')
-        newCustomer.style.visibility = 'hidden'
-        proceedButton.style.visibility = "visible";
-        newCustomerInputs.classList.add("displayNone");
-        console.log(customerToCheckout, 'skapade kund');
-      }
-    })
+customerCheck.addEventListener("click", async () => {
+  customerToCheckout = "";
+  proceedButton.style.visibility = "hidden";
+  let checkForCustomer = await checkUser(
+    document.getElementById("email").value
+  );
+  console.log(checkForCustomer);
 
-    customerCheck.addEventListener('click', async () => {
-      customerToCheckout = ''
-      proceedButton.style.visibility = "hidden";
-        let checkForCustomer = await checkUser(document.getElementById('email').value);
-        console.log(checkForCustomer);
+  if (Object.keys(checkForCustomer).length === 0) {
+    newCustomer.style.visibility = "visible";
+    newCustomerInputs.classList.remove("displayNone");
+    alert("Customer not found, please try again or register a new customer");
+    console.log("no customer");
+  } else if (Object.keys(checkForCustomer).length != 0) {
+    alert("Customer found, feel free to proceed to checkout");
+    newCustomer.style.visibility = "hidden";
+    proceedButton.style.visibility = "visible";
+    newCustomerInputs.classList.add("displayNone");
+    console.log(checkForCustomer, "kollade kund");
+    customerToCheckout = checkForCustomer;
+  } else {
+    console.log("You thief!! We dont want you here");
+    window.location.reload;
+  }
+  return customerToCheckout;
+});
 
-    if (Object.keys(checkForCustomer).length === 0) {
-      newCustomer.style.visibility = 'visible'
-      newCustomerInputs.classList.remove("displayNone");
-      alert('Customer not found, please try again or register a new customer')
-      console.log('no customer');
-
-      
-      
-      
-    } else if (Object.keys(checkForCustomer).length != 0) {
-      alert('Customer found, feel free to proceed to checkout')
-      newCustomer.style.visibility = 'hidden'
-      proceedButton.style.visibility = "visible";
-      newCustomerInputs.classList.add("displayNone");
-      console.log(checkForCustomer, 'kollade kund');
-      customerToCheckout = checkForCustomer
-      
-    } else {
-      console.log('You thief!! We dont want you here')
-      window.location.reload
-    }
-    
-    return customerToCheckout
-    
-  
-  })
-
-  const createUser = async (customer) => {
-    try {
-        let response = await fetch("/create-customer", {
-            headers: { 'Content-Type': 'application/json' },
-            method: "POST",
-            body: JSON.stringify(customer)
-          })
-          let customerId = await response.json()
-          return customerId
-        } catch (err) {
-          console.error("Error:", err);
-        }
-      }
-      // for form, edit 
-      function ValidationForm() {
-        let username = document.forms["RegForm"]["Name"];
-        let email = document.forms["RegForm"]["Email"];
-        let phoneNumber = document.forms["RegForm"]["Telephone"];
-        let pass = document.forms["RegForm"]["Password"];
-        if (username.value == "") {
-          alert("Please enter your name.");
-          username.focus();
-          return false;
-        }
-        if (email.value == "") {
-          alert("Please enter a valid e-mail address.");
-          email.focus();
-          return false;
-        }
-        if (email.value.indexOf("@", 0) < 0) {
-          alert("Please enter a valid e-mail address.");
-          email.focus();
-          return false;
-        }
-        if (email.value.indexOf(".", 0) < 0) {
-          alert("Please enter a valid e-mail address.");
-          email.focus();
-          return false;
-        }
-        if (phoneNumber.value == "") {
-          alert("Please enter your telephone number.");
-          phoneNumber.focus();
-          return false;
-        }
-        return true;
-      }
+const createUser = async (customer) => {
+  try {
+    let response = await fetch("/create-customer", {
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+      body: JSON.stringify(customer),
+    });
+    let customerId = await response.json();
+    return customerId;
+  } catch (err) {
+    console.error("Error:", err);
+  }
+};
+// for form, edit
+function ValidationForm() {
+  let username = document.forms["RegForm"]["Name"];
+  let email = document.forms["RegForm"]["Email"];
+  let phoneNumber = document.forms["RegForm"]["Telephone"];
+  let pass = document.forms["RegForm"]["Password"];
+  if (username.value == "") {
+    alert("Please enter your name.");
+    username.focus();
+    return false;
+  }
+  if (email.value == "") {
+    alert("Please enter a valid e-mail address.");
+    email.focus();
+    return false;
+  }
+  if (email.value.indexOf("@", 0) < 0) {
+    alert("Please enter a valid e-mail address.");
+    email.focus();
+    return false;
+  }
+  if (email.value.indexOf(".", 0) < 0) {
+    alert("Please enter a valid e-mail address.");
+    email.focus();
+    return false;
+  }
+  if (phoneNumber.value == "") {
+    alert("Please enter your telephone number.");
+    phoneNumber.focus();
+    return false;
+  }
+  return true;
+}
