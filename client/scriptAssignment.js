@@ -269,7 +269,7 @@ customerCheck.addEventListener("click", async () => {
   if (Object.keys(checkForCustomer).length === 0) {
     newCustomer.style.visibility = "visible";
     newCustomerInputs.classList.remove("displayNone");
-    alert("Customer not found, please try again or register a new customer");
+    customerToCheckout = checkForCustomer
     console.log("no customer");
   } else if (Object.keys(checkForCustomer).length != 0) {
     alert("Customer found, feel free to proceed to checkout");
